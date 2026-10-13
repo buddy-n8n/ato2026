@@ -1,0 +1,6 @@
+global: {scrape_interval: 5s}
+scrape_configs:
+  - job_name: n8n-main
+    static_configs: [{targets: ["n8n:5678"]}]
+  - job_name: n8n-workers
+    static_configs: [{targets: ["worker1:5678","worker2:5678"]}]

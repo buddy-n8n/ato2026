@@ -1,0 +1,34 @@
+// Ship the console logs of this compose project's containers to Loki.
+// Every log line keeps its container's compose service name as a "service" label.
+
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "ato" {
+  targets = discovery.docker.containers.targets
+
+  // only this compose project (ato-demo), not every container on the machine
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    regex         = "ato-demo"
+    action        = "keep"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+}
+
+loki.source.docker "ato" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.ato.output
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

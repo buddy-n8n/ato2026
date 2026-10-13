@@ -1,0 +1,76 @@
+{
+  "id": "s1PSLvoUnHDXxvn9",
+  "name": "Billing sync",
+  "nodes": [
+    {
+      "id": "01c7ee8b-1342-4761-820c-24efe6ccd39a",
+      "name": "Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b1a7c2d4-5e60-4f31-9a82-0c3d4e5f6a01",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "billing-sync",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "be95f887-8ea0-4b64-98b2-449e3b8c3016",
+      "name": "Fetch invoices",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return Array.from({length: 5}, (_, i) => ({json:{invoice: i}}));"
+      }
+    },
+    {
+      "id": "a39b2b80-121d-4f6d-b06d-e4d83aec1633",
+      "name": "Push to billing API",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "jsCode": "if (Math.random() < 0.12) throw new Error('billing API returned 503');\nreturn items;"
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Fetch invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch invoices": {
+      "main": [
+        [
+          {
+            "node": "Push to billing API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

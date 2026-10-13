@@ -1,0 +1,52 @@
+{
+  "id": "vJGoU5fNsBoUKkKk",
+  "name": "Lead enrichment",
+  "nodes": [
+    {
+      "id": "3f482fd5-9cef-4508-9566-092bd426ba7e",
+      "name": "Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b1a7c2d4-5e60-4f31-9a82-0c3d4e5f6a02",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-enrichment",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "b5383f5f-7c54-4e5f-ae1a-dea7c0a51ebd",
+      "name": "Enrich leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const ms = 400 + Math.floor(Math.random()*2500);\nawait new Promise(r => setTimeout(r, ms));\nreturn [{json:{enriched:true, ms}}];"
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Enrich leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

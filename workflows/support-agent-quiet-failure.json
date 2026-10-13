@@ -1,0 +1,100 @@
+{
+  "id": "uHEcn5NcNolV5hon",
+  "name": "Support agent: ticket triage",
+  "nodes": [
+    {
+      "id": "2c60fd3c-03aa-4cc0-9622-3c33d51b51d3",
+      "name": "Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b1a7c2d4-5e60-4f31-9a82-0c3d4e5f6a03",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "support-agent",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "ac0bff2b-4e92-4e2b-9384-41e6e820dca3",
+      "name": "Look up customer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{customer:'Dana Lee', plan:'Pro'}}];"
+      }
+    },
+    {
+      "id": "7b2e3752-e153-49e1-b992-fe993d4ed493",
+      "name": "Create ticket",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// the ticketing API returns 500 here, and the error is swallowed\nreturn [{json:{ticket:null, http:500}}];"
+      }
+    },
+    {
+      "id": "91e9a872-5052-45c7-a2e5-d31f87f91705",
+      "name": "Email customer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{sent:true, body:'Ticket #' + Math.floor(10000+Math.random()*80000) + ' created'}}];"
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Look up customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look up customer": {
+      "main": [
+        [
+          {
+            "node": "Create ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create ticket": {
+      "main": [
+        [
+          {
+            "node": "Email customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
